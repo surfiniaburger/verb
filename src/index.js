@@ -117,7 +117,7 @@ async function processImage(ai, imageBuffer) {
   
 
   // Route for processing uploaded images
-app.post("/upload-and-classify", async (c) => {
+app.post("/classify-and-generate", async (c) => {
 	const ai = new Ai(c.env.AI);
   
 	try {
