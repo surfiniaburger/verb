@@ -80,20 +80,20 @@
 
 <form id="upload-form" enctype="multipart/form-data">
   <input type="file" name="image" accept="image/*" required>
-  <button type="button" onclick="uploadAndClassify()">Classify</button>
+  <button type="button" onclick="classifyAndGenerate()">Classify</button>
 </form>
 
 <div id="result-container"></div>
 </div>
 <script>
-  async function uploadAndClassify() {
+  async function classifyAndGenerate() {
     const form = document.getElementById('upload-form');
     const resultContainer = document.getElementById('result-container');
 
     const formData = new FormData(form);
 
     try {
-      const response = await fetch('/upload-and-classify', {
+      const response = await fetch('/classify-and-generate', {
         method: 'POST',
         body: formData,
       });
