@@ -83,6 +83,11 @@
   <button type="button" onclick="classifyAndGenerate()">Classify</button>
 </form>
 
+<div id="loading-state">
+  <div class="spinner"></div>
+
+</div>
+
 <div id="result-container"></div>
 </div>
 <script>
@@ -99,6 +104,9 @@
       });
 
       const data = await response.json();
+
+      document.getElementById("loading-state").style.display = "block";
+
       const highestLabel = JSON.stringify(data, null, 2);
 
         // Use regular expression to extract the label value
@@ -114,7 +122,7 @@
          const source = new EventSource(energyUrl);
 
          source.onmessage = (event) => {
-        if (event.data === "[DONE]") {
+        if (/^\[DONE\]$/.test(event.data)) {
           source.close();
           form.query.value = "";
           document.getElementById("loading-state").style.display = "none";

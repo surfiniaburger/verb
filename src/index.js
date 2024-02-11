@@ -6,6 +6,7 @@ import sports from "./sports.html";
 import finance from "./finance.html";
 import energy from "./energy.html";
 import image from "./image.html";
+import audio from "./audio.html";
 
 const app = new Hono();
 
@@ -14,6 +15,7 @@ app.get("/b", (c) => c.html(sports))
 app.get("/c", (c) => c.html(finance))
 app.get("/d", (c) => c.html(energy))
 app.get("/e", (c) => c.html(image))
+app.get ("/f", (c) => c.html(audio))
 
 app.get("/health", async (c) => {
 	const ai = new Ai(c.env.AI);
@@ -152,6 +154,46 @@ app.post("/classify-and-generate", async (c) => {
 	}
   });
 
+
+  // Function to convert audio to text using Cloudflare AI
+async function convertAudioToText(audioBuffer, ai) {
+	const audioInputs = {
+	  audio: [...new Uint8Array(audioBuffer)],
+	};
+  
+	try {
+	const audioResponse = await ai.run('@cf/openai/whisper', audioInputs);
+	console.log("Model Response:", audioResponse);
+	const textResult = JSON.stringify(audioResponse.text);
+	 return textResult;
+  } catch (error) {
+	console.error('Error converting audio to text:', error);
+	return { textResult: 'Error converting audio to text' }; // Return an error message
+  }
+  }
+
+  app.post("/audio-to-text", async (c) => {
+	const ai = new Ai(c.env.AI);
+
+	try {
+	  const formData = await c.req.formData();
+	  const audioFile = formData.get("audio");
+
+	  if (!audioFile) {
+		return c.json({ error: "No audio file uploaded" });
+	  }
+
+	  const audioBuffer = await audioFile.arrayBuffer();
+	  // Convert audio to text using Cloudflare AI
+	  const textResult = await convertAudioToText(audioBuffer, ai);
+
+
+	  return c.json({ textResult });
+	} catch (error) {
+	  console.error('Error processing audio file:', error);
+	  return c.json({ error: 'Error processing audio file' });
+	}
+  });
 
 
   app.onError((err, c) => {
